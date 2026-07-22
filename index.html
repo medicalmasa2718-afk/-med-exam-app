@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>医師国家試験 演習アプリ</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icons/icon-192.svg">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header>
+            <h1 id="header-title">🩺 医師国家試験 演習</h1>
+            <button id="btn-home" class="hidden">ブロック選択に戻る</button>
+        </header>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- View: Block Selection (Home) -->
+            <section id="view-dashboard" class="view active">
+                <div class="welcome-card">
+                    <h2>第120回 医師国家試験 過去問</h2>
+                    <p>解きたいブロックを選択してください。連問（共通症例問題）・複数選択・図像表示に完全対応。</p>
+                </div>
+
+                <!-- Overall Progress Statistics Card -->
+                <div class="stats-card">
+                    <div class="stats-header">
+                        <h3>📊 全体学習進捗</h3>
+                        <span id="overall-rate-badge" class="stats-badge">0% 達成</span>
+                    </div>
+                    <div class="stats-progress-bar-container">
+                        <div id="overall-progress-bar" class="stats-progress-bar"></div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value" id="stat-solved">0 / 395</span>
+                            <span class="stat-label">解答済み</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="stat-accuracy">0.0%</span>
+                            <span class="stat-label">正答率</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value text-danger" id="stat-wrong">0</span>
+                            <span class="stat-label">復習対象 (誤答)</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value text-warning" id="stat-bookmark">0</span>
+                            <span class="stat-label">ブックマーク</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Special Modes Section -->
+                <h3 class="section-title">特殊演習モード</h3>
+                <div class="special-modes-grid">
+                    <button id="btn-mode-weakness" class="mode-card mode-weakness">
+                        <div class="mode-icon">❌</div>
+                        <div class="mode-info">
+                            <h4>弱点克服モード</h4>
+                            <p id="weakness-count-text">過去に間違えた問題（0問）を復習</p>
+                        </div>
+                    </button>
+                    <button id="btn-mode-bookmark" class="mode-card mode-bookmark">
+                        <div class="mode-icon">⭐</div>
+                        <div class="mode-info">
+                            <h4>ブックマーク演習</h4>
+                            <p id="bookmark-count-text">お気に入りに登録した問題（0問）</p>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Medical Specialty Practice Modes Section -->
+                <h3 class="section-title">🩺 診療科・分野から選択演習</h3>
+                <div class="specialty-grid">
+                    <button class="specialty-card" data-specialty="循環器">
+                        <span class="spec-icon">🫀</span>
+                        <div class="spec-info">
+                            <h4>循環器</h4>
+                            <p id="spec-stat-循環器">0 / 68問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="消化器">
+                        <span class="spec-icon">🍱</span>
+                        <div class="spec-info">
+                            <h4>消化器</h4>
+                            <p id="spec-stat-消化器">0 / 52問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="公衆衛生・医療倫理">
+                        <span class="spec-icon">🏥</span>
+                        <div class="spec-info">
+                            <h4>公衆衛生・医療倫理</h4>
+                            <p id="spec-stat-公衆衛生・医療倫理">0 / 45問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="神経・精神">
+                        <span class="spec-icon">🧠</span>
+                        <div class="spec-info">
+                            <h4>神経・精神</h4>
+                            <p id="spec-stat-神経・精神">0 / 42問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="呼吸器">
+                        <span class="spec-icon">🫁</span>
+                        <div class="spec-info">
+                            <h4>呼吸器</h4>
+                            <p id="spec-stat-呼吸器">0 / 34問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="産婦人科">
+                        <span class="spec-icon">🤰</span>
+                        <div class="spec-info">
+                            <h4>産婦人科</h4>
+                            <p id="spec-stat-産婦人科">0 / 32問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="小児科">
+                        <span class="spec-icon">👶</span>
+                        <div class="spec-info">
+                            <h4>小児科</h4>
+                            <p id="spec-stat-小児科">0 / 19問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="腎・尿路">
+                        <span class="spec-icon">💧</span>
+                        <div class="spec-info">
+                            <h4>腎・尿路</h4>
+                            <p id="spec-stat-腎・尿路">0 / 17問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="整形・皮膚・感覚器">
+                        <span class="spec-icon">🦴</span>
+                        <div class="spec-info">
+                            <h4>整形・皮膚・感覚器</h4>
+                            <p id="spec-stat-整形・皮膚・感覚器">0 / 14問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="血液・免疫・腫瘍">
+                        <span class="spec-icon">🩸</span>
+                        <div class="spec-info">
+                            <h4>血液・免疫・腫瘍</h4>
+                            <p id="spec-stat-血液・免疫・腫瘍">0 / 9問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="内分泌・代謝">
+                        <span class="spec-icon">🩺</span>
+                        <div class="spec-info">
+                            <h4>内分泌・代謝</h4>
+                            <p id="spec-stat-内分泌・代謝">0 / 4問</p>
+                        </div>
+                    </button>
+                    <button class="specialty-card" data-specialty="救急・麻酔・総合">
+                        <span class="spec-icon">🚨</span>
+                        <div class="spec-info">
+                            <h4>救急・麻酔・総合</h4>
+                            <p id="spec-stat-救急・麻酔・総合">0 / 3問</p>
+                        </div>
+                    </button>
+                </div>
+                
+                <h3 class="section-title">ブロックを選択</h3>
+                <div class="block-grid">
+                    <button class="block-card" data-block="A">
+                        <div class="block-badge block-a">A</div>
+                        <div class="block-info">
+                            <h4>Aブロック（一般問題）</h4>
+                            <p>73問 ・ 基礎〜臨床知識 <span id="block-progress-A" class="block-stat-text">(0/73)</span></p>
+                        </div>
+                    </button>
+                    <button class="block-card" data-block="B">
+                        <div class="block-badge block-b">B</div>
+                        <div class="block-info">
+                            <h4>Bブロック（必修問題 🚨）</h4>
+                            <p>50問 ・ 絶対に落とせない必須知識 <span id="block-progress-B" class="block-stat-text">(0/50)</span></p>
+                        </div>
+                    </button>
+                    <button class="block-card" data-block="C">
+                        <div class="block-badge block-c">C</div>
+                        <div class="block-info">
+                            <h4>Cブロック（臨床問題）</h4>
+                            <p>74問 ・ 症例・画像問題中心 <span id="block-progress-C" class="block-stat-text">(0/74)</span></p>
+                        </div>
+                    </button>
+                    <button class="block-card" data-block="D">
+                        <div class="block-badge block-d">D</div>
+                        <div class="block-info">
+                            <h4>Dブロック（一般問題）</h4>
+                            <p>74問 ・ 基礎〜臨床知識 <span id="block-progress-D" class="block-stat-text">(0/74)</span></p>
+                        </div>
+                    </button>
+                    <button class="block-card" data-block="E">
+                        <div class="block-badge block-e">E</div>
+                        <div class="block-info">
+                            <h4>Eブロック（必修問題 🚨）</h4>
+                            <p>50問 ・ 絶対に落とせない必須知識 <span id="block-progress-E" class="block-stat-text">(0/50)</span></p>
+                        </div>
+                    </button>
+                    <button class="block-card" data-block="F">
+                        <div class="block-badge block-f">F</div>
+                        <div class="block-info">
+                            <h4>Fブロック（臨床問題）</h4>
+                            <p>73問 ・ 症例・画像問題中心 <span id="block-progress-F" class="block-stat-text">(0/73)</span></p>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="reset-container">
+                    <button id="btn-reset-data" class="btn-reset">🗑️ 学習データの初期化</button>
+                </div>
+            </section>
+
+            <!-- View: Practice & Number Jump Mode -->
+            <section id="view-practice" class="view hidden">
+                <div class="q-nav-header">
+                    <span id="block-title-display">Aブロック演習</span>
+                    <button id="btn-toggle-qlist" class="btn-sub">問題一覧 ☰</button>
+                </div>
+
+                <div id="question-grid-container" class="q-grid-box hidden">
+                    <p class="q-grid-hint">問題番号を選択して直接ジャンプ（※🔗は連問グループ）：</p>
+                    <div id="question-number-grid" class="q-num-grid">
+                        <!-- Number buttons injected via JS -->
+                    </div>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div id="practice-progress" class="progress-bar"></div>
+                </div>
+                <p id="practice-counter" class="counter">1 / 75</p>
+
+                <div class="card-meta">
+                    <span id="practice-category" class="tag category-tag"></span>
+                    <span id="practice-source" class="tag source-tag"></span>
+                    <span id="practice-hisshu" class="tag hisshu-tag hidden">🚨 必修</span>
+                    <span id="practice-multi-tag" class="tag multi-tag hidden">✌️ 複数選択</span>
+                    <span id="practice-renmon-tag" class="tag renmon-tag hidden">🔗 連問</span>
+                    <button id="btn-bookmark" class="tag bookmark-btn">☆ ブックマーク</button>
+                </div>
+                <div class="keyboard-hint-box">
+                    <span>⌨️ ショートカット: <kbd>1~5</kbd>選択 | <kbd>Enter</kbd>確定/次へ | <kbd>←</kbd><kbd>→</kbd>移動</span>
+                </div>
+
+                <!-- Linked Questions (連問) Banner -->
+                <div id="practice-renmon-banner" class="renmon-banner-box hidden">
+                    <div class="renmon-banner-title">🔗 共通臨床症例（連問）</div>
+                    <p id="practice-renmon-stem-text"></p>
+                </div>
+
+                <div class="question-box">
+                    <p id="practice-question-text">読み込み中...</p>
+                </div>
+
+                <!-- Multiple Images Gallery container -->
+                <div id="practice-images-gallery" class="image-gallery hidden">
+                    <!-- Image elements injected via JS -->
+                </div>
+
+                <!-- Multi-select Prompt Banner -->
+                <div id="multi-select-prompt" class="select-prompt-box hidden">
+                    <span id="multi-select-prompt-text">💡 選択肢を【2つ】選択してください</span>
+                </div>
+
+                <div id="practice-options" class="options-grid">
+                    <!-- Options injected via JS -->
+                </div>
+
+                <div id="submit-btn-container" class="submit-container">
+                    <button id="btn-submit-answer" class="btn-submit" disabled>解答を確定する</button>
+                </div>
+
+
+                <div id="practice-result" class="result-box hidden">
+                    <h3 id="practice-result-title"></h3>
+                    <div id="practice-mnemonic-container" class="mnemonic-box hidden">
+                        <p id="practice-mnemonic-text"></p>
+                    </div>
+                    <div class="explanation">
+                        <h4>詳細解説</h4>
+                        <p id="practice-explanation-text"></p>
+                    </div>
+                    <div class="nav-btn-row">
+                        <button id="btn-practice-prev" class="btn-secondary">前へ</button>
+                        <button id="btn-practice-next" class="btn-primary">次へ</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Image Modal -->
+        <div id="image-modal" class="modal hidden">
+            <span id="modal-close" class="close">&times;</span>
+            <img class="modal-content" id="modal-img">
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
