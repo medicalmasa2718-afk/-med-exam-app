@@ -849,4 +849,78 @@ main {
     font-weight: 600;
 }
 
+/* User Profile Selector Card */
+.user-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.user-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.user-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.92rem;
+    color: var(--text-main);
+}
+
+.user-label strong {
+    color: var(--primary);
+}
+
+.user-icon {
+    font-size: 1.2rem;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-select {
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    background-color: #fff;
+    color: var(--text-main);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.user-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.btn-sub-user {
+    background-color: #eff6ff;
+    color: var(--primary);
+    border: 1px solid #bfdbfe;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.btn-sub-user:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
 

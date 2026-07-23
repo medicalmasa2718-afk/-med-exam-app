@@ -8,6 +8,13 @@ let currentSelectedIndices = [];
 let userAnswers = {};
 let bookmarks = [];
 
+// Multi-user Profile State
+let currentUser = localStorage.getItem('med_exam_current_user') || 'デフォルト';
+let userList = JSON.parse(localStorage.getItem('med_exam_user_list')) || ['デフォルト'];
+if (!userList.includes(currentUser)) {
+    userList.push(currentUser);
+}
+
 // DOM Elements
 const views = {
     dashboard: document.getElementById('view-dashboard'),
@@ -18,13 +25,27 @@ const btnHome = document.getElementById('btn-home');
 const btnToggleQList = document.getElementById('btn-toggle-qlist');
 const qGridContainer = document.getElementById('question-grid-container');
 
-// LocalStorage helpers
+// LocalStorage helpers (User specific)
 function loadSavedData() {
     try {
-        const savedAnswers = localStorage.getItem('med_exam_user_answers');
-        if (savedAnswers) userAnswers = JSON.parse(savedAnswers);
-        const savedBookmarks = localStorage.getItem('med_exam_bookmarks');
-        if (savedBookmarks) bookmarks = JSON.parse(savedBookmarks);
+        const keyAnswers = `med_exam_user_answers_${currentUser}`;
+        const keyBookmarks = `med_exam_bookmarks_${currentUser}`;
+
+        // Backward compatibility migration for initial default user
+        const oldAnswers = localStorage.getItem('med_exam_user_answers');
+        const oldBookmarks = localStorage.getItem('med_exam_bookmarks');
+        if (oldAnswers && !localStorage.getItem(keyAnswers) && currentUser === 'デフォルト') {
+            localStorage.setItem(keyAnswers, oldAnswers);
+        }
+        if (oldBookmarks && !localStorage.getItem(keyBookmarks) && currentUser === 'デフォルト') {
+            localStorage.setItem(keyBookmarks, oldBookmarks);
+        }
+
+        const savedAnswers = localStorage.getItem(keyAnswers);
+        userAnswers = savedAnswers ? JSON.parse(savedAnswers) : {};
+
+        const savedBookmarks = localStorage.getItem(keyBookmarks);
+        bookmarks = savedBookmarks ? JSON.parse(savedBookmarks) : [];
     } catch (e) {
         console.error("Failed to load saved data from localStorage", e);
     }
@@ -32,20 +53,63 @@ function loadSavedData() {
 
 function saveData() {
     try {
-        localStorage.setItem('med_exam_user_answers', JSON.stringify(userAnswers));
-        localStorage.setItem('med_exam_bookmarks', JSON.stringify(bookmarks));
+        const keyAnswers = `med_exam_user_answers_${currentUser}`;
+        const keyBookmarks = `med_exam_bookmarks_${currentUser}`;
+        localStorage.setItem(keyAnswers, JSON.stringify(userAnswers));
+        localStorage.setItem(keyBookmarks, JSON.stringify(bookmarks));
+        localStorage.setItem('med_exam_current_user', currentUser);
+        localStorage.setItem('med_exam_user_list', JSON.stringify(userList));
     } catch (e) {
         console.error("Failed to save data to localStorage", e);
     }
 }
 
+// User Profile Management Functions
+function renderUserUI() {
+    const userDisplay = document.getElementById('current-user-display');
+    if (userDisplay) userDisplay.textContent = currentUser;
+
+    const dropdown = document.getElementById('user-select-dropdown');
+    if (dropdown) {
+        dropdown.innerHTML = '';
+        userList.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u;
+            opt.textContent = u;
+            if (u === currentUser) opt.selected = true;
+            dropdown.appendChild(opt);
+        });
+    }
+}
+
+function switchUser(newUserName) {
+    if (!newUserName || newUserName === currentUser) return;
+    currentUser = newUserName;
+    saveData();
+    loadSavedData();
+    renderUserUI();
+    updateDashboardStats();
+}
+
+function addNewUser() {
+    const name = prompt("新しい学習者（プロファイル）のお名前を入力してください:", "");
+    if (!name) return;
+    const cleanName = name.trim();
+    if (!cleanName) return;
+
+    if (!userList.includes(cleanName)) {
+        userList.push(cleanName);
+    }
+    switchUser(cleanName);
+}
+
 function resetData() {
-    if (confirm("全ての解答記録およびブックマークを削除して初期化しますか？")) {
+    if (confirm(`プロファイル「${currentUser}」の全ての解答記録およびブックマークを削除して初期化しますか？`)) {
         userAnswers = {};
         bookmarks = [];
         saveData();
         updateDashboardStats();
-        alert("学習データを初期化しました。");
+        alert(`プロファイル「${currentUser}」の学習データを初期化しました。`);
     }
 }
 
@@ -183,7 +247,18 @@ async function init() {
     }
 
     loadSavedData();
+    renderUserUI();
     updateDashboardStats();
+
+    // User Profile Event Listeners
+    const userDropdown = document.getElementById('user-select-dropdown');
+    if (userDropdown) {
+        userDropdown.addEventListener('change', (e) => switchUser(e.target.value));
+    }
+    const btnAddUser = document.getElementById('btn-add-user');
+    if (btnAddUser) {
+        btnAddUser.addEventListener('click', addNewUser);
+    }
 
     // Event Listeners
     btnHome.addEventListener('click', showDashboard);
