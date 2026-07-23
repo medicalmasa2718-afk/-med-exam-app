@@ -49,6 +49,56 @@ function resetData() {
     }
 }
 
+// Export study history to JSON file
+function exportData() {
+    const exportObj = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        userAnswers: userAnswers,
+        bookmarks: bookmarks
+    };
+    const json = JSON.stringify(exportObj, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const date = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `kokushi_history_${date}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+// Import study history from JSON file
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (!data.userAnswers) {
+                throw new Error('形式が不正です');
+            }
+            const importCount = Object.keys(data.userAnswers).length;
+            const importBookmarks = (data.bookmarks || []).length;
+
+            if (confirm(`ファイルの内容：\n• 解答済み ${importCount}問\n• ブックマーク ${importBookmarks}件\n\n現在の履歴に上書きして復元しますか？`)) {
+                userAnswers = data.userAnswers;
+                bookmarks = data.bookmarks || [];
+                saveData();
+                updateDashboardStats();
+                alert(`復元完了！\n${importCount}問の解答履歴を読み込みました。`);
+            }
+        } catch (err) {
+            alert('読み込み失敗：正しい形式のJSONファイルではありません。\n' + err.message);
+        }
+        // inputをリセット（同じファイルを再度読み込めるように）
+        event.target.value = '';
+    };
+    reader.readAsText(file);
+}
+
 // Update Dashboard Statistics
 function updateDashboardStats() {
     const total = allData.length || 395;
@@ -153,6 +203,13 @@ async function init() {
 
     const btnReset = document.getElementById('btn-reset-data');
     if (btnReset) btnReset.addEventListener('click', resetData);
+
+    // Export / Import event listeners
+    const btnExport = document.getElementById('btn-export-data');
+    if (btnExport) btnExport.addEventListener('click', exportData);
+
+    const fileImportInput = document.getElementById('file-import-input');
+    if (fileImportInput) fileImportInput.addEventListener('change', importData);
 
     const btnBookmarkTag = document.getElementById('btn-bookmark');
     if (btnBookmarkTag) btnBookmarkTag.addEventListener('click', toggleBookmarkCurrentQuestion);

@@ -713,6 +713,54 @@ main {
     background-color: #fef2f2;
 }
 
+/* Data Export / Import Buttons */
+.data-management-row {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.btn-data-export {
+    background-color: #eff6ff;
+    color: var(--primary);
+    border: 1px solid #bfdbfe;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.btn-data-export:hover {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.btn-data-import {
+    background-color: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.btn-data-import:hover {
+    background-color: #16a34a;
+    color: white;
+    border-color: #16a34a;
+}
+
+
+
 /* Bookmark Button in Practice Meta */
 .bookmark-btn {
     background-color: #fffbeb;
